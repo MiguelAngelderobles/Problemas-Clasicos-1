@@ -71,7 +71,7 @@ class Productor(threading.Thread):
         self.lista = lista
         self.lockLleno = lockLleno
 
-
+    #Seccion critica debido a, al igual que productor y consumidor del ejercicio anterior, productor quiere consumir un recurso que no se produjo
     def run(self):
         while True:
             self.lockLleno.acquire()
@@ -107,6 +107,10 @@ class Consumidor(threading.Thread):
 def main():
     hilos = []
     lista = listaFinita(4)
+    #a diferencia del consumidor ejecicio primario, en este se realiza de forma polimofica, y se colocan dos Lock
+    #en los runs de la clases, para que el productor pueda llenar la lista se aplica antes de que pueda cargar y despues para entregar el recurso
+    #se pregunta si esta lleno desactiva el lock
+    #a cambio de consumidorque libera una vez el tamaño de la lista sea = 0
     lockLleno = threading.Lock()
     lockVacio = threading.Lock()
 
@@ -115,13 +119,13 @@ def main():
         consumidor = Consumidor(lista, lockVacio)
         hilos.append(productor)
         hilos.append(consumidor)
-
+        #con logging info, se busca los valores del thread que se pasa como paramentro en la Clase
         logging.info(f'Arrancando productor {productor.name}')
         productor.start()
 
         logging.info(f'Arrancando productor {consumidor.name}')
         consumidor.start()
-
+    #los treads se agregan a una lista, despues iteramos la lista de threads para poder ejec join para que corran juntos
     for h in hilos:
         h.join()
 
